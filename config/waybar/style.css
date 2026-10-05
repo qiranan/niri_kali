@@ -1,0 +1,212 @@
+* {
+    font-family:
+        Maple Mono Normal NF CN Medium,
+        JetBrainsMono Nerd Font Mono,
+        FontAwesome,
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+    font-size: 12px;
+    padding: 4px 0;
+    border-radius: 9px;
+    margin: 2px 0;
+}
+
+window#waybar {
+    background-color: rgba(43, 48, 59, 0.5);
+    /* 左侧竖排: 右边框分隔内容 */
+    border-right: 3px solid rgba(100, 114, 125, 0.5);
+    color: #ffffff;
+    transition-property: background-color;
+    transition-duration: 0.5s;
+}
+window#waybar.hidden {
+    opacity: 0.2;
+}
+
+/*
+window#waybar.empty {
+    background-color: transparent;
+}
+window#waybar.solo {
+    background-color: #FFFFFF;
+}
+*/
+
+/*window#waybar.termite {
+    background-color: #3f3f3f;
+}
+
+window#waybar.chromium {
+    background-color: #000000;
+    border: none;
+}*/
+
+/*#
+####################################
+niri/workspaces
+####################################
+#*/
+#workspaces {
+    margin-top: 2px;
+    padding-top: 2px;
+}
+#workspaces button {
+    /* 竖排工作区按钮: 上下堆叠 */
+    padding: 3px 0;
+    border-radius: 7px;
+    margin: 2px 0;
+    min-width: 14px;
+}
+#workspaces button:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+#workspaces button.active {
+    background: rgba(240, 255, 255, 0.2);
+    box-shadow: inset -2px 0 #ffffff;
+}
+
+/*#
+####################################
+时钟
+####################################
+#*/
+/*tooltip label {
+    font-size: 25px;
+}*/
+#clock {
+    background-color: rgba(240, 255, 255, 0.2);
+}
+
+/*#
+####################################
+电池状态
+####################################
+#*/
+#custom-power_status {
+    font-weight: 700;
+}
+/* 电量健康 (80% 以上) */
+#custom-power_status.high {
+    background-color: rgba(143, 250, 161, 0.2);
+}
+
+/* 电量中等 (40% - 79%) */
+#custom-power_status.medium {
+    background-color: rgba(241, 250, 140, 0.2);
+}
+
+/* 电量偏低 (20% - 39%) */
+#custom-power_status.low {
+    background-color: rgba(255, 184, 108, 0.25);
+}
+
+/* 电量极低 (20% 以下) - 亮红色背景，并加粗文字警告 */
+#custom-power_status.critical {
+    background-color: rgba(255, 85, 85, 0.3);
+    font-weight: bold;
+}
+/*#
+####################################
+音频
+####################################
+#*/
+#pulseaudio {
+    background-color: rgba(240, 255, 255, 0.2);
+}
+
+/*#
+####################################
+网络
+####################################
+#*/
+#network {
+    background-color: rgba(240, 255, 255, 0.2);
+}
+
+/*#
+####################################
+cpu + 内存
+####################################
+#*/
+#cpu_memory {
+    background-color: rgba(240, 255, 255, 0.2);
+}
+#cpu {
+    padding: 0px;
+    margin: 0 6px 0 0;
+}
+#memory {
+    padding: 0px;
+    margin: 0px;
+}
+/* 警告状态：变黄 */
+#cpu.warning,
+#memory.warning {
+    color: #f1fa8c;
+}
+/* 危险状态：变红并加粗 */
+#cpu.critical,
+#memory.critical {
+    color: #ff5555;
+    font-weight: bold;
+}
+
+/*#
+####################################
+系统托盘
+####################################
+#*/
+#tray {
+    background-color: rgba(240, 255, 255, 0.2);
+}
+#tray .passive,
+#tray .active,
+#tray .needs-attention {
+    margin: 0;
+    padding: 0;
+}
+#tray .needs-attention {
+    background-color: rgba(80, 250, 123, 0.2);
+}
+#tray menu {
+    margin: 0;
+    padding: 0;
+}
+
+/*#
+####################################
+custom/power
+####################################
+#*/
+#custom-power {
+    /*background-color: rgba(240, 255, 255, 0.2);*/
+}
+
+/*#
+####################################
+通知中心 (swaync) 按钮
+####################################
+#*/
+#custom-notifications {
+    background-color: rgba(240, 255, 255, 0.2);
+}
+/* 无通知时弱化显示 */
+#custom-notifications.none {
+    background-color: rgba(240, 255, 255, 0.08);
+}
+/* 有未读通知: 高亮 */
+#custom-notifications.notification {
+    background-color: rgba(143, 250, 161, 0.25);
+    font-weight: bold;
+}
+/* 勿扰模式: 变红 */
+#custom-notifications.dnd-none,
+#custom-notifications.dnd-notification {
+    color: #ff5555;
+}
+/* 控制面板已打开 */
+#custom-notifications.cc-open {
+    background-color: rgba(241, 250, 140, 0.3);
+}

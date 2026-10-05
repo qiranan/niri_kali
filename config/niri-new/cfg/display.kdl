@@ -1,0 +1,12 @@
+// ────────────── Output Configuration ──────────────
+// You can run `niri msg outputs` to get the correct name for your displays.
+// You will have to remove "/-" and edit it before it takes effect.
+// https://github.com/YaLTeR/niri/wiki/Configuration:-Outputs
+
+// 本文件故意不写死输出名称。不同机器可能使用 eDP-1、HDMI-A-1、DP-1 等名称；
+// Niri 会为未配置的输出选择默认模式和缩放。需要自定义时，先运行 `niri msg outputs`，
+// 再取消下面示例的注释并替换成自己的输出名。
+//
+// output "eDP-1" {
+//     scale 1
+// }

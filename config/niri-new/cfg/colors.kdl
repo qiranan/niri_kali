@@ -1,0 +1,37 @@
+// 配色定义 — 由 Noctalia 的 Morandi 主题引擎自动生成并覆盖
+// (脚本: ~/.config/noctalia/morandi-gen.py --wallpaper <图>)
+//
+// 本文件是初始占位值。原 dotfiles 仓库未附带此文件, 但 config.kdl 用
+// `include "./cfg/colors.kdl"` 引用它 —— niri 在 include 缺失时会拒绝加载
+// 整个配置, 因此必须先存在一个有效文件。
+//
+// 采用低饱和莫兰迪色系作为默认值。
+
+layout {
+    focus-ring {
+        width 1
+        active-gradient from="#7f9cb5" to="#8fa89b" angle=45 relative-to="workspace-view"
+        inactive-gradient from="#3a3f45" to="#4a5058" angle=45 relative-to="workspace-view"
+    }
+    border {
+        off
+    }
+    shadow {
+        color "#3a3f4570"
+    }
+    tab-indicator {
+        active-color "#7f9cb5"
+        inactive-color "#4a5058"
+        urgent-color "#b58a8a"
+    }
+    insert-hint {
+        color "#7f9cb580"
+    }
+}
+
+recent-windows {
+    highlight {
+        active-color "#7f9cb5"
+        urgent-color "#b58a8a"
+    }
+}

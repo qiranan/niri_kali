@@ -1,0 +1,15 @@
+// ────────────── Startup Applications ──────────────
+// https://github.com/YaLTeR/niri/wiki/Configuration:-Miscellaneous#spawn-sh-at-startup
+
+    // Polkit 认证代理。不同 Debian/Kali 安装的路径可能不同，按存在的程序启动。
+    spawn-sh-at-startup "for agent in /usr/libexec/polkit-mate-authentication-agent-1 /usr/lib/policykit-1-mate/polkit-mate-authentication-agent-1 /usr/lib/x86_64-linux-gnu/libexec/polkit-kde-authentication-agent-1 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1; do if [ -x \"$agent\" ]; then exec \"$agent\"; fi; done"
+
+    // 中文输入法。显式启动可避免某些 SDDM/niri 会话不处理 xdg-autostart 的情况。
+    spawn-sh-at-startup "fcitx5 -d"
+
+    // Noctalia 桌面壳: 状态栏 / 控制中心 / 启动器 / 剪贴板 / 锁屏 / 壁纸 / 主题
+    spawn-sh-at-startup "noctalia"
+
+    // 已移除 (原配置有但 Kali 不可用):
+    //   clipse                  — Kali 仓库无此包 (Noctalia 自带剪贴板面板, 无需替代)
+    //   /home/.../slugcatpet/start.sh — 原作者个人项目, 与桌面无关

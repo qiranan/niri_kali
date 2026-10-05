@@ -1,0 +1,57 @@
+    animations {
+        // 工作区切换：非常丝滑的滑动，无回弹 (macOS 风格)
+        workspace-switch {
+            spring damping-ratio=1.0 stiffness=140 epsilon=0.0001
+        }
+        // 窗口打开：优雅的缓入，绝对平滑
+        window-open {
+            spring damping-ratio=1.0 stiffness=150 epsilon=0.0001
+        }
+        // 窗口关闭：保留原有的掉落+旋转着色器，但调整时间和曲线让其更丝滑
+        window-close {
+            duration-ms 350
+            curve "ease-out-quad"
+            custom-shader r#"
+vec4 fall_and_rotate(vec3 coords_geo, vec3 size_geo) {
+    float progress = niri_clamped_progress * niri_clamped_progress;
+    vec2 coords = (coords_geo.xy - vec2(0.5, 1.0)) * size_geo.xy;
+    coords.y -= progress * 200.0;
+    float random = (niri_random_seed - 0.5) / 2.0;
+    random = sign(random) - random;
+    float max_angle = 0.05 * random;
+    float angle = progress * max_angle;
+    mat2 rotate = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+    coords = rotate * coords;
+    coords_geo = vec3(coords / size_geo.xy + vec2(0.5, 1.0), 1.0);
+    vec3 coords_tex = niri_geo_to_tex * coords_geo;
+    vec4 color = texture2D(niri_tex, coords_tex.st);
+    return color * (1.0 - niri_clamped_progress);
+}
+vec4 close_color(vec3 coords_geo, vec3 size_geo) {
+    return fall_and_rotate(coords_geo, size_geo);
+}
+"#
+        }
+        // 水平视图移动（滚轮或触控板滚动）：极致顺滑
+        horizontal-view-movement {
+            spring damping-ratio=1.0 stiffness=140 epsilon=0.0001
+        }
+        // 窗口移动（比如被推开或者拖动后归位）：平稳归位，没有果冻感
+        window-movement {
+            spring damping-ratio=1.0 stiffness=150 epsilon=0.0001
+        }
+        // 窗口调整大小（由快捷键或布局变化引起）：平稳展开
+        window-resize {
+            spring damping-ratio=1.0 stiffness=150 epsilon=0.0001
+        }
+        config-notification-open-close {
+            spring damping-ratio=1.0 stiffness=200 epsilon=0.0001
+        }
+        screenshot-ui-open {
+            spring damping-ratio=1.0 stiffness=200 epsilon=0.0001
+        }
+        // 总览模式：像 macOS 调度中心一样平滑展开，零回弹
+        overview-open-close {
+            spring damping-ratio=1.0 stiffness=130 epsilon=0.0001
+        }
+    }

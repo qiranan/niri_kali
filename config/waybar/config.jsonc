@@ -1,0 +1,148 @@
+// -*- mode: jsonc -*-
+{
+  // 左侧竖排状态栏 (CachyOS 风格)
+  "position": "left",
+  "width": 18,
+
+  "modules-left": ["niri/workspaces"],
+  "modules-center": ["clock"],
+  "modules-right": [
+    "custom/notifications",
+    "idle_inhibitor",
+    "backlight",
+    "pulseaudio",
+    "custom/power_status",
+    "network",
+    "group/cpu_memory",
+    "tray",
+    "custom/power",
+  ],
+
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "",
+      "deactivated": "",
+    },
+  },
+  "tray": {
+    "icon-size": 14,
+    "spacing": 1,
+  },
+  "clock": {
+    // 竖向显示时间 (rotate 90 旋转文字)
+    "format": "{:L%H:%M}",
+    "rotate": 90,
+    "format-alt": "{:L%Y, %m-%d, %A (%R)}",
+    "tooltip-format": "<tt><big> {:L%Y年%m月%d日}\n────────────\n{calendar}</big></tt>",
+    "calendar": {
+      "mode": "month",
+      "mode-mon-col": 3,
+      "weeks-pos": "left",
+      "on-scroll": 1,
+      "format": {
+        "months": "<span color='#ffead3'><b>{}</b></span>",
+        "days": "<span color='#ecc6d9'><b>{}</b></span>",
+        // "weeks": "<span color='#99ffdd'><b>W{}</b></span>",
+        "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+        "today": "<span color='#ff6699'><b><u>{}</u></b></span>",
+      },
+    },
+  },
+  "group/cpu_memory": {
+    "orientation": "vertical",
+    "modules": ["cpu", "memory"],
+  },
+  "cpu": {
+    "interval": 1, // 缩短检测间隔，报警更及时
+    "format": "󰍛 {usage}",
+    "on-click": "kitty btop",
+    "states": {
+      "warning": 70, // 超过 70% 进入 warning 状态
+      "critical": 90, // 超过 90% 进入 critical 状态
+    },
+  },
+  "memory": {
+    "interval": 1,
+    "format": "󰘚 {percentage}",
+    "on-click": "kitty btop",
+    "states": {
+      "warning": 80,
+      "critical": 95,
+    },
+  },
+  "backlight": {
+    "format": "{icon}",
+    "tooltip-format": "亮度 {percent}%",
+    "format-icons": ["", "", "", "", "", "", "", "", ""],
+  },
+  "custom/power_status": {
+    "format": "{}",
+    "return-type": "json",
+    "interval": 30,
+    // waybar 的 exec / on-click / exec-if 都由 `/bin/sh -c` 执行, 所以 $HOME 会展开
+    "exec": "$HOME/.config/waybar/power_status.sh",
+    "signal": 1,
+    "on-click": "$HOME/.config/waybar/power_status.sh next",
+  },
+  "network": {
+    "on-click": "kitty --hold zsh -c 'ip addr show dev wlan0 2>/dev/null; ip addr show dev eth0 2>/dev/null; nmcli device'",
+    "max-length": 6,
+    "format-wifi": " {essid}",
+    "format-ethernet": "{ipaddr}/{cidr} ",
+    "tooltip-format": "{ifname}: {ipaddr}/{cidr}",
+    "format-linked": "⚠{ifname} (No IP)",
+    "format-disconnected": "⚠Disconnected",
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}",
+    "format-bluetooth": " {volume}",
+    "format-bluetooth-muted": "󰝟 ",
+    "format-muted": "󰝟",
+    "tooltip-format": "音量 {volume}%",
+    "format-icons": {
+      "headphone": "",
+      "default": ["", "", ""],
+    },
+    "on-click": "pavucontrol",
+  },
+  "custom/notifications": {
+    // swaync 通知中心按钮: 左键开/关控制面板, 右键切换勿扰 (DND)
+    // 图标随状态: 实心铃铛=有通知 / 空心=无 / 斜杠=勿扰
+    "format": "{icon}",
+    "format-icons": {
+      "notification": "",
+      "none": "",
+      "dnd-notification": "",
+      "dnd-none": "",
+      "inhibited-notification": "",
+      "inhibited-none": "",
+      "dnd-inhibited-notification": "",
+      "dnd-inhibited-none": "",
+    },
+    "return-type": "json",
+    "exec-if": "test -x $HOME/.local/bin/swaync-client",
+    "exec": "$HOME/.local/bin/swaync-client -swb",
+    "on-click": "$HOME/.local/bin/swaync-client -t -sw",
+    "on-click-right": "$HOME/.local/bin/swaync-client -d -sw",
+    "escape": true,
+  },
+  "custom/power": {
+    "format": "⏻ ",
+    "tooltip": false,
+    "menu": "on-click",
+    // ⚠️ 这一条**不能**写成 $HOME —— menu-file 是「路径」而不是「命令」, waybar 直接
+    //    用 GLib 读文件, 不经过 shell, 变量不会展开。所以这里留占位符,
+    //    由 deploy_cachyos_config.sh 在部署时替换成你的真实家目录
+    //    (`sed -i "s|/home/YOUR_USERNAME|$HOME|g"`)。手工部署的话自己改掉。
+    "menu-file": "/home/YOUR_USERNAME/.config/waybar/power_menu.xml",
+    "menu-actions": {
+      "lock": "hyprlock",
+      "logout": "niri msg action quit",
+      "shutdown": "systemctl poweroff",
+      "reboot": "systemctl reboot",
+      "suspend": "hyprlock & sleep 0.8 && systemctl suspend",
+      "hibernate": "systemctl hibernate",
+    },
+  },
+}

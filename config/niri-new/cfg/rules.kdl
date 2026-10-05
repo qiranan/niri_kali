@@ -1,0 +1,57 @@
+    window-rule {
+        geometry-corner-radius 8 // Set every window radius to 8
+        clip-to-geometry true
+    }
+
+    window-rule {
+        match app-id="fcitx"
+        open-floating true
+    }
+
+    // Waydroid 窗口规则 - 浮动模式，允许拖拽
+    window-rule {
+        match app-id="Waydroid"
+        open-floating true
+    }
+
+    // Waydroid 应用窗口 - 允许浮动
+    window-rule {
+        match app-id=".*"
+        draw-border-with-background false
+    }
+
+    // ────────────── Noctalia v5 集成 (依官方 docs/user/compositor-settings/niri.mdx) ──────────────
+
+    // 壁纸放到 backdrop 层: 工作区背景透明时壁纸常驻可见 (官方 "Option 2: Stationary Wallpaper")
+    // 对应 Noctalia 配置 [backdrop] enabled = false
+    layer-rule {
+        match namespace="^noctalia-wallpaper"
+        place-within-backdrop true
+    }
+
+    // Noctalia 设置窗口: 浮动并固定尺寸
+    window-rule {
+        match app-id="dev.noctalia.Noctalia"
+        open-floating true
+        default-column-width { fixed 1080; }
+        default-window-height { fixed 920; }
+    }
+
+    // Noctalia 的图层表面 (状态栏/通知/控制中心/OSD/停靠栏)
+    // xray=false 让模糊采样其下方的窗口与内容, 而不是壁纸, 圆角边缘更干净
+    layer-rule {
+        match namespace="^noctalia-(bar-[^\"]+|notification|dock|panel|attached-panel|osd)$"
+        background-effect {
+            xray false
+        }
+    }
+
+    // 窗口切换器: 需要真正开启模糊
+    layer-rule {
+        match namespace="noctalia-window-switcher"
+        background-effect {
+            blur true
+            xray false
+        }
+    }
+

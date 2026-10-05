@@ -1,0 +1,319 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+#  Noctalia v5 配置 —— 由 dotfiles-master 的 CachyOS 配置迁移而来
+#
+#  ⚠️ 版本说明:
+#    原 dotfiles 的 noctalia 配置是 **v4** 时代的 (Quickshell 架构): 它由
+#    settings.json (settingsVersion 59) + plugins.json + plugins/*.luau 组成。
+#    Noctalia v5 是一次彻底重写 —— 原生 C++23 / OpenGL ES 程序, 配置格式改为
+#    **TOML**, 不读取 settings.json, 两者不兼容也无法自动迁移。
+#    因此本文件是按 v5 schema 重新翻译的结果, 而非原文件副本。
+#
+#  加载顺序 (后者覆盖前者):
+#    1. 程序内置默认值
+#    2. ~/.config/noctalia/*.toml   ← 本文件; 按文件名排序合并
+#    3. ~/.local/state/noctalia/settings.toml  ← GUI 中修改设置时由程序写入
+#
+#  参考: 上游 example.toml 与 docs/user/**
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# ── 全局缩放 / 字体 ───────────────────────────────────────────────────────────
+# ← v4 general.scaleRatio = 0.9
+[accessibility]
+ui_scale = 0.9
+
+[shell]
+corner_radius_scale = 1.0
+# ← v4 ui.fontDefault = "Noto Sans"
+#
+# 改成 Win11 字体。**这里必须是逗号分隔的族名列表, 不能只写 "Segoe UI"**:
+#   · Segoe UI **不含任何 CJK 字形** (fc-list ':charset=中' 里 0 条), 只写它的话
+#     汉字会掉回 fontconfig 的默认中文 (Noto Sans CJK SC), 一行里中英两种字体。
+#   · Pango ≥1.44 支持有序回退列表, 逐字按「主字体有没有这个字形」自动选。
+#   · 实测 (Noctalia 走 pango_font_description_set_family, 见 cairo_text_renderer.cpp:411):
+#       中文 → Microsoft YaHei UI ✓    English → Segoe UI ✓
+# ⚠️ 别改成在 fontconfig 里 prepend 雅黑 —— Pango 把整个 layout 的 lang 设成
+#    locale(zh-cn) 而非按字符判断, 那样连英文也会变雅黑。已实测踩过这个坑。
+font_family           = "Segoe UI, Microsoft YaHei UI"
+# ← v4 weather.hideWeatherCityName = false
+show_location         = true
+# ← v4 dock.colorizeIcons = true (v5 中图标着色是 shell 级开关)
+app_icon_colorize     = true
+clipboard_enabled     = true
+clipboard_history_max_entries = 100
+# polkit 认证代理由 niri 启动的 polkit-kde-authentication-agent-1 提供, 故关闭内置的
+polkit_agent          = false
+# v4 原配置 telemetryEnabled = true; 这里保持上游默认不上报
+telemetry_enabled     = false
+# 头像: 原配置指向原作者的个人图片, 请按需修改
+# avatar_path         = "~/Pictures/avatar.png"
+
+# ← v4 general.animationSpeed = 0.59 (v4 语义不明; v5 中 1.0 = 默认速度, 越小越慢)
+[shell.animation]
+enabled = true
+speed   = 0.85
+
+# ← v4 general.shadowDirection = "bottom_right" + shadowOffsetX/Y = 2/3
+[shell.shadow]
+direction = "down_right"
+alpha     = 0.5
+
+# ← v4 general.enableBlurBehind = true / ui.panelBackgroundOpacity = 0.95
+# glass = 面板半透明 + 卡片可透, 配合 niri 的 layer-rule 模糊
+[shell.panel]
+transparency_mode = "glass"
+borders           = true
+shadow            = true
+
+# ── 主题 ──────────────────────────────────────────────────────────────────────
+# ← v4 colorSchemes: darkMode=true / useWallpaperColors=true /
+#                    generationMethod="muted" / predefinedScheme="Kanagawa"
+[theme]
+mode             = "dark"
+source           = "wallpaper"   # 跟随壁纸取色
+builtin          = "Kanagawa"    # 取色失败时的回退配色
+wallpaper_scheme = "muted"       # 低饱和, 对应 v4 的 Morandi 取向
+pure_black_dark  = false
+
+[theme.templates]
+enable_builtin_templates = true
+# v4 templates.activeTemplates = [zenBrowser, btop, steam, gtk, starship, code]
+# v5 内置模板 id 见 `noctalia theme --list-templates`;
+# 其中 zenBrowser/steam/code 在 v5 内置集中不存在, starship 由 morandi-gen.py 接管,
+# 故此处只启用这三项 (对应 dotfiles 里的 btop 主题与 gtk-3.0/gtk-4.0 noctalia.css)
+builtin_ids = ["btop", "gtk3", "gtk4"]
+enable_community_templates = false
+
+# ── 壁纸 ──────────────────────────────────────────────────────────────────────
+[wallpaper]
+enabled             = true
+fill_mode           = "crop"     # ← v4 fillMode
+# ← v4 transitionType (v5 无 pixelate, 已去除)
+transition          = ["disc", "fade", "stripes", "wipe", "honeycomb"]
+transition_duration = 4600       # ← v4 transitionDuration
+edge_smoothness     = 0.14       # ← v4 transitionEdgeSmoothness
+# ⚠️ Noctalia **不展开 `~` 也不展开 $HOME** —— 源码里 wallpaper 模块没有调用
+#    expandUserPath() (该函数存在于 src/core/file_utils.h:43, 但壁纸路径没走它),
+#    写了 `~/...` 会变成一个找不到的字面目录。
+#    所以这里留占位符 /home/YOUR_USERNAME, 由 deploy_cachyos_config.sh 部署时替换。
+#    改成你自己的壁纸目录即可。
+directory           = "/home/YOUR_USERNAME/Pictures/wallpapers"
+
+[wallpaper.default]
+# 首次启动使用的壁纸 (dotfiles 的 __Main__.png)
+# 同上: 必须是绝对路径。这个文件不在仓库里, 指向不存在的图不会报错, 只是没有壁纸,
+# 从控制中心换一张就会自动改写这里的值。
+path = "/home/YOUR_USERNAME/Pictures/wallpapers/__Main__.png"
+
+[wallpaper.automation]
+enabled          = false         # ← v4 automationEnabled = false
+interval_seconds = 300           # ← v4 randomIntervalSec
+order            = "random"      # ← v4 wallpaperChangeMode
+recursive        = true
+
+# backdrop 保持关闭 —— 配合 niri 的 "Option 2: Stationary Wallpaper"
+# (壁纸放到 backdrop 层常驻可见; 见 config/niri-new/cfg/rules.kdl)
+[backdrop]
+enabled = false
+
+# ── 状态栏 (左侧竖栏) ─────────────────────────────────────────────────────────
+# ← v4 bar.*, 其中 position = "left" 与原配置一致
+[bar.main]
+position           = "left"
+# 竖栏宽度: 44 → 29 (原值的 2/3)
+thickness          = 29
+background_opacity = 0.93        # ← v4 backgroundOpacity
+radius             = 12          # ← v4 frameRadius
+margin_ends        = 4           # ← v4 marginHorizontal
+margin_edge        = 4           # ← v4 marginVertical
+padding            = 10          # ← v4 contentPadding (v5 建议值更大一些)
+widget_spacing     = 6           # ← v4 widgetSpacing
+# 内容总倍率 (图标和文字一起缩): 0.9 → 0.72
+#
+# ⚠️ thickness 只管「栏有多宽」, **不会连带缩放里面的内容** —— 两者是分开的旋钮。
+#    依据 widget.h:101  fontScale() = m_contentScale * m_fontScale
+#    图标的字号同样乘 m_contentScale (volume_widget.cpp:154)。
+#    所以只把 thickness 改小、scale 不动的话, 内容大小不变而胶囊变窄 → 贴边溢出。
+#
+#    实测 (胶囊 = round(29 × 0.76) = 22px, 栏体 29px):
+#      scale=0.90  sysmon 的 "34%" 宽 23px, 已 > 22px 胶囊; 4 字符 "100%"
+#                  外推 ≈31px, 会超出 29px 栏体被裁掉 ← 不能沿用原值
+#      scale=0.72  "34%" 宽 16px, "100%" 外推 ≈21px, 仍在 22px 胶囊内 ← 取此值
+#      scale=0.60  13px, 安全但字太小、留白过多
+#    想让文字在此基础上单独再大/小一点, 用 font_scale (在 scale 之上再乘一次)。
+scale              = 0.72
+shadow             = true        # ← v4 general.enableShadows
+auto_hide          = false       # ← v4 displayMode = "always_visible"
+reserve_space      = true        # ← v4 enableExclusionZoneInset
+# 胶囊背景 ← v4 showCapsule / capsuleOpacity / capsuleColorKey
+capsule            = true
+capsule_fill       = "surface_variant"
+capsule_opacity    = 0.16
+
+# 三段布局: 竖栏中 start=顶部, center=中部, end=底部
+# ← v4 widgets.left / .center / .right, 已去除 v5 中不存在的 v4 插件:
+#     plugin:notes-scratchpad, plugin:kde-connect, plugin:micyou, plugin:github-feed
+start  = ["launcher", "clock", "sysmon", "active_window", "media"]
+center = ["workspaces"]
+end    = ["tray", "notifications", "volume", "brightness", "control-center"]
+
+# ── 各 widget 设置 ────────────────────────────────────────────────────────────
+# ← v4 bar.widgets.*.Clock.formatVertical = "HH mm - dd MM"
+#    竖栏使用 vertical_format
+[widget.clock]
+format          = "{:%H:%M}"
+vertical_format = "{:%H\n%M}"
+tooltip_format  = "{:%H:%M %A, %B %d}"
+
+# ← v4 Workspace: labelMode=index / focusedColor=primary / occupiedColor=secondary
+#    (v5 的 label_source 只支持 id / name)
+[widget.workspaces]
+show_labels               = true
+label_source              = "id"
+labels_only_when_occupied = true
+max_label_chars           = 2
+show_tooltip              = true
+focused_color             = "primary"
+occupied_color            = "secondary"
+empty_color               = "secondary"
+
+# ← v4 SystemMonitor (原配置显示 CPU 占用 + 温度 + 内存 + 磁盘)
+#    v5 的 sysmon 是"一个 widget 一种指标", 故这里保留 CPU 占用;
+#    其余指标可在设置界面里加装多个 sysmon 实例
+[widget.sysmon]
+stat          = "cpu_usage"
+show_value    = true
+visualization = "none"
+
+# ← v4 ActiveWindow: showIcon=true, showText=true, scrollingMode=hover
+[widget.active_window]
+display      = "icon_and_text"
+title_scroll = "on_hover"
+
+# ← v4 MediaMini: showAlbumArt=true, showProgressRing=true, scrollingMode=hover
+[widget.media]
+hide_album_art = false
+title_scroll   = "on_hover"
+show_progress  = true
+
+# ← v4 NotificationHistory: showUnreadBadge = true
+[widget.notifications]
+hide_when_no_unread = false
+
+# ── 控制中心 ──────────────────────────────────────────────────────────────────
+# ← v4 controlCenter.shortcuts (left/right 合并; v5 上限 6 个)
+[[control_center.shortcuts]]
+type = "wifi"
+[[control_center.shortcuts]]
+type = "bluetooth"
+[[control_center.shortcuts]]
+type = "wallpaper"
+[[control_center.shortcuts]]
+type = "notification"
+[[control_center.shortcuts]]
+type = "power_profile"
+[[control_center.shortcuts]]
+type = "nightlight"
+
+# ← v4 calendar.cards 中的 calendar-month-card / weather-card
+[control_center.calendar]
+show_events_card  = true
+show_week_numbers = false
+
+# ── 程序坞 ────────────────────────────────────────────────────────────────────
+# ← v4 dock.*
+[dock]
+enabled            = true
+position           = "bottom"
+background_opacity = 0.61        # ← v4 backgroundOpacity
+auto_hide          = true        # ← v4 displayMode = "auto_hide"
+# ⚠️ reserve_space 默认是 true, 且注释写明 "applies with or without auto_hide"
+#    —— 也就是自动隐藏的 dock 仍会占用桌面空间。占用高度 =
+#    dockThickness = icon_size 48 + kCellPad*2 12 + cross_axis_padding*2 16 = 76px,
+#    叠加 niri 的 gaps 8 后, 窗口下方会凭空多出 92px 空隙。
+#    关掉后 dock 滑出时浮在窗口之上 (macOS 式), 不再挤压布局。
+reserve_space      = false
+launcher_position  = "end"       # ← v4 launcherPosition
+launcher_icon      = "grid-dots"
+active_monitor_only = true       # ← v4 onlySameOutput
+shadow             = true
+
+# ── 通知 ──────────────────────────────────────────────────────────────────────
+# ← v4 notifications.* (overlayLayer = true → layer = "overlay")
+[notification]
+enable_daemon      = true
+show_app_name      = true
+show_actions       = true
+layer              = "overlay"
+background_opacity = 1.0         # ← v4 backgroundOpacity
+offset_x           = 20
+offset_y           = 8
+
+# ← v4 notifications.sounds.enabled = true / volume = 0.5
+# (v5 把提示音统一到 [audio]; 原 v4 audio.volumeFeedback 为 false)
+[audio]
+enable_sounds = true
+sound_volume  = 0.5
+
+# ── 屏幕提示 (OSD) ────────────────────────────────────────────────────────────
+# ← v4 osd.*
+[osd]
+position           = "top_right"  # ← v4 location
+background_opacity = 1.0
+offset_x           = 20
+offset_y           = 8
+
+# ── 锁屏 ──────────────────────────────────────────────────────────────────────
+# ← v4 general.lockScreenBlur / lockScreenTint / lockScreenAnimations / lockOnSuspend
+[lockscreen]
+enabled             = true
+transition          = ["fade", "disc", "wipe", "stripes", "honeycomb"]
+transition_duration = 1500
+blur_intensity      = 0.54
+tint_intensity      = 0.28
+lock_before_suspend = true
+
+# ── 空闲行为 ──────────────────────────────────────────────────────────────────
+# ← v4 idle.lockTimeout = 660 / idle.screenOffTimeout = 600
+#    注意原配置里熄屏(600s)早于锁屏(660s), 此处照搬
+#
+# ⚠️ 按要求改为「屏幕常亮」: 自动熄屏与自动锁屏均已关闭 (enabled = false)。
+#    保留原 timeout 数值不动, 想恢复自动行为把对应 enabled 改回 true 即可。
+#
+#    补充说明:
+#      · 关掉自动锁屏后, 离开电脑不会自动上锁 —— 需要手动按 Mod+Alt+L
+#        (绑定的是 `noctalia msg session lock`)。
+#      · 若日后只想「临时」常亮, 控制中心里加一个 caffeine 快捷开关即可,
+#        不必改这里的配置; 播放视频本就不会熄屏 (v5 会响应应用的 D-Bus
+#        空闲抑制请求, 见 src/dbus/idle/screensaver_service.h)。
+#      · 修改后用 `noctalia msg config-reload` 生效, 无需重新登录。
+[idle.behavior.screen-off]
+timeout = 600
+action  = "screen_off"
+enabled = false
+
+[idle.behavior.lock]
+timeout = 660
+action  = "lock"
+enabled = false
+
+# ── 系统监控轮询 ──────────────────────────────────────────────────────────────
+[system.monitor]
+enabled               = true
+cpu_poll_seconds      = 2.0
+gpu_poll_seconds      = 5.0
+memory_poll_seconds   = 2.0
+network_poll_seconds  = 3.0
+disk_poll_seconds     = 10.0
+
+# ── 天气 / 定位 ───────────────────────────────────────────────────────────────
+# ← v4 location.weatherEnabled = true / name = "ZHejiang"
+#    ⚠️ "Zhejiang" 是原作者的位置, 请改成你自己的城市 (或改用 auto_locate)
+[weather]
+enabled         = true
+refresh_minutes = 30
+unit            = "celsius"
+effects         = true
+
+[location]
+auto_locate = false
+address     = "Zhejiang"

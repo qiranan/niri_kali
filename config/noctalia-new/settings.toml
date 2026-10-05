@@ -1,0 +1,9 @@
+# 换壁纸后重算 Morandi 配色 (改写 kitty / fastfetch / btop / GTK 的配色文件)
+#
+# 用 $HOME 而不是绝对路径: noctalia 执行 hook 走的是 `/bin/sh -lc <命令>`,
+# 所以 shell 变量会正常展开。依据: src/core/process/process.cpp:839
+#   runAsync(std::vector<std::string>{"/bin/sh", "-lc", command})
+#   → 由 src/app/application_ipc.cpp:789 runShellCommand() 调用
+# 注意命令里必须保留 `bash ` 前缀 (脚本不是可执行位依赖的, 显式用 bash 调更稳)。
+[hooks]
+wallpaper_changed = [ "bash $HOME/.config/noctalia/apply-morandi.sh" ]

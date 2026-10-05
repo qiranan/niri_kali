@@ -1,0 +1,47 @@
+{
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+    "logo": {
+        "type": "kitty",
+        // ⚠️ fastfetch 不展开 $HOME, 所以用 /home/YOUR_USERNAME 占位符, 由
+        //    deploy_cachyos_config.sh 部署时替换成你的家目录。
+        //    这个文件是 morandi-gen.py 的「引导文件」: 它必须先存在, 脚本才会接管
+        //    并在每次换壁纸时重写整个文件 (届时这里会被改写成 Path.home() 推导出的
+        //    真实绝对路径)。
+        //    头像 PNG 不存在也没关系 —— fastfetch 静默回退到内置 logo, 不报错。
+        "source": "/home/YOUR_USERNAME/.config/fastfetch/avatar.png",
+        "width": 40,
+        "height": 19,
+        "padding": { "top": 2, "right": 2 }
+    },
+    "display": {
+        "separator": "  ",
+        "disableLinewrap": true,
+        "color": {
+            "keys": "#6a7a85",
+            "title": "#f2f2f2"
+        }
+    },
+    "modules": [
+        { "type": "title", "color": { "user": "#f2f2f2", "at": "#6a7a85", "host": "#636472" } },
+        { "type": "separator", "string": "─", "times": 40, "outputColor": "#616466" },
+        { "type": "os", "key": "   OS" },
+        { "type": "kernel", "key": "   Kernel" },
+        { "type": "uptime", "key": "   Uptime" },
+        { "type": "packages", "key": "   Packages" },
+        { "type": "shell", "key": "   Shell" },
+        { "type": "terminal", "key": "   Terminal" },
+        { "type": "terminalfont", "key": "  󰊕 Font" },
+        { "type": "de", "key": "   DE" },
+        { "type": "wm", "key": "   WM" },
+        { "type": "separator", "string": "─", "times": 40, "outputColor": "#616466" },
+        { "type": "host", "key": "  󰩘 Host" },
+        { "type": "cpu", "key": "   CPU" },
+        { "type": "gpu", "key": "   GPU" },
+        { "type": "memory", "key": "   Memory" },
+        { "type": "disk", "key": "   Disk" },
+        { "type": "display", "key": "  󰍙 Display" },
+        { "type": "separator", "string": "─", "times": 40, "outputColor": "#616466" },
+        { "type": "localip", "key": "  󰩠 Local IP" },
+        { "type": "colors", "symbol": "circle", "paddingLeft": 2 }
+    ]
+}

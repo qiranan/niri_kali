@@ -1,0 +1,22 @@
+[general]
+initial-tool = "arrow"
+fullscreen = true
+resize = { mode = "smart" }
+copy-command = "wl-copy"
+early-exit = ["all"]
+output-filename = "~/Downloads/screenshot-%Y%m%d-%H%M%S.png"
+annotation-size-factor = 0.7
+
+
+
+[font]
+family = "MapleMonoNormal-NF-CN-Regular"
+
+[color-palette]
+palette = [
+    "#eb4d4bff",
+    "#f0932bff",
+    "#6ab04cff",
+    "#22a6b3ff",
+    "#130f40FF",
+]

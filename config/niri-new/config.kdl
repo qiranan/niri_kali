@@ -1,0 +1,83 @@
+include "./cfg/autostart.kdl"
+include "./cfg/keybinds.kdl"
+include "./cfg/input.kdl"
+include "./cfg/display.kdl"
+include "./cfg/layout.kdl"
+include "./cfg/rules.kdl"
+include "./cfg/misc.kdl"
+include "./cfg/animation.kdl"
+include "./cfg/colors.kdl"
+binds {
+    // 原配置用 mark-shot (第三方工具, Kali 无), 改用 niri 内置截图
+    Mod+Print { screenshot; }
+}
+
+environment {
+    // ⚠️ 这里**必须**写绝对路径 —— niri 的 `environment` 块是字面量赋值, 不做任何
+    //    变量展开 (`$HOME` 会原样成为字面字符串, PATH 直接坏掉)。niri 只对
+    //    `include "~/..."` 的路径展开 `~`, 别的地方都不展开。
+    //    `/home/YOUR_USERNAME` 是占位符, 由 deploy_cachyos_config.sh 部署时替换;
+    //    手工部署请自行改成你的家目录。
+    PATH "/home/YOUR_USERNAME/.local/bin:/home/YOUR_USERNAME/.npm-global/bin:/usr/local/bin:/usr/bin:/bin"
+    // 保持其他必要的 Wayland 环境变量
+    XMODIFIERS "@im=fcitx"
+    QT_IM_MODULE "fcitx"
+    GTK_IM_MODULE "fcitx"
+    SDL_IM_MODULE "fcitx"
+    // 注意: 已移除原配置的 NVIDIA 环境变量
+    // (__NV_PRIME_RENDER_OFFLOAD / __GLX_VENDOR_LIBRARY_NAME)
+    // 本机 nvidia 驱动未加载 (仅 i915), 设置这些会导致 GL 程序无法启动
+}
+
+input {
+	mouse {
+		accel-profile "flat"
+	}
+}
+
+window-rule {
+	match app-id=".*"
+	exclude app-id="org.kde.krita"
+	opacity 0.98
+	draw-border-with-background false
+	background-effect {
+		blur true
+	}
+}
+
+window-rule {
+	match app-id="org.kde.krita"
+	opacity 1.0
+	background-effect {
+		blur false
+	}
+}
+
+window-rule {
+	match app-id="org.gnome.Loupe"
+	opacity 1.0
+	background-effect {
+		blur false
+	}
+}
+
+// 已移除 kando 环形菜单窗口规则 (kando 在 Kali 仓库中不存在)
+
+window-rule {
+	match app-id="splayer" title=".*桌面歌词.*"
+	open-floating true
+	opacity 1.0
+	focus-ring { off; }
+	border { off; }
+	shadow { off; }
+	geometry-corner-radius 0
+	background-effect {
+		blur false
+	}
+}
+
+cursor {
+    xcursor-theme "Bibata-Modern-Classic"
+    xcursor-size 16
+}
+

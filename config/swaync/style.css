@@ -1,0 +1,145 @@
+/* swaync 控制面板 / 通知中心主题 —— 深色圆角 + 毛玻璃, 与 niri/waybar 配色统一 */
+
+* {
+    font-family: "Maple Mono Normal NF CN Medium", "JetBrainsMono Nerd Font Mono", "Roboto", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* 控制中心整体 */
+.control-center {
+    background: rgba(43, 48, 59, 0.82);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+    padding: 0;
+}
+
+.control-center-list {
+    background: transparent;
+}
+
+.control-center-list-placeholder {
+    opacity: 0.5;
+}
+
+/* 通知行 */
+.notification-row {
+    outline: none;
+    margin: 4px 8px;
+}
+
+.notification {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    margin: 4px 0;
+    padding: 10px;
+}
+
+.notification-content {
+    background: transparent;
+    padding: 4px;
+}
+
+.notification-default-action,
+.notification-action {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    padding: 4px;
+    margin: 0;
+}
+
+.notification-default-action:hover,
+.notification-action:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.notification-default-action:not(:only-child),
+.notification-action:not(:only-child) {
+    margin-left: 8px;
+}
+
+.notification-group-collapsed,
+.notification-group {
+    background: transparent;
+}
+
+/* 标题 / 开关小部件 */
+.widget-title {
+    background: transparent;
+    padding: 14px 16px 6px 16px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.widget-title > button {
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+.widget-dnd,
+.widget-inhibitors {
+    background: transparent;
+    margin: 4px 16px;
+}
+
+.widget-dnd > switch,
+.widget-inhibitors > switch {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 12px;
+}
+
+/* 媒体播放器 */
+.widget-mpris {
+    background: transparent;
+    margin: 4px 16px;
+}
+
+.widget-mpris-player {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.widget-mpris-title {
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.widget-mpris-subtitle {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+/* 底部按钮网格 */
+.widget-buttons-grid {
+    background: transparent;
+    padding: 4px;
+    margin: 4px 16px;
+}
+
+.widget-buttons-grid > flowbox > flowboxchild > button {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.widget-buttons-grid > flowbox > flowboxchild > button:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* 音量 / 亮度滑块 */
+.widget-volume,
+.widget-slider {
+    background: transparent;
+    margin: 4px 16px;
+    padding: 4px;
+}
+
+.blank-window {
+    background: transparent;
+}
